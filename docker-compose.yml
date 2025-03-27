@@ -1,5 +1,6 @@
 services:
   time-api:
+    container_name: time-api
     build:
       context: ./api
       dockerfile: Dockerfile
