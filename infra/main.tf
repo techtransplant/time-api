@@ -71,7 +71,8 @@ resource "aws_security_group" "vpc_endpoints" {
 
 # ECR Repository for the API image
 resource "aws_ecr_repository" "time_api" {
-  name = "${var.api_name}-repo"
+  name         = "${var.api_name}-repo"
+  force_delete = true # Easier cleanup :)
 }
 
 # ECS Cluster
