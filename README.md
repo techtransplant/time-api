@@ -1,8 +1,6 @@
 # time-api
 This repo contains the code and infrastructure for a simple API that can be deployed to an AWS account.
 
-## Demo
-
 ### Requirements
 You will need to have the following tools installed in order to deploy this API to your AWS account:
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) v2.25.5 was used during development, but most recent versions should work.
@@ -31,13 +29,31 @@ Server started on port 8000
 2025/03/27 23:15:18 "GET http://localhost:8000/ HTTP/1.1" from 192.168.65.1:24218 - 200 39B in 11.666µs
 ```
 
-
 ## Deploy to AWS
-The sections below provide detailed instructions on how to deploy the API to AWS.
+The following commands will deploy the API and 34 AWS resources to your account using Terraform:
+```
+make deploy
+```
+or if you want a hands-off experience,
+```
+make deploy-auto
+```
+
+### Cleanup
+When you are done using the API, you can clean up the resources by running the following command:
+```
+make destroy
+```
+or if you want a hands-off experience,
+```
+make destroy-auto
+```
+
+## Variables
 
 ### Assumptions
-- You have proper credentials, with Admin access, to an AWS account.
-
+- You have proper AWS credentials, with Admin access, to an AWS account.
+- You can run `aws sts get-caller-identity` to verify your credentials.
 
 ### AWS Credentials
 You will need to have the following credentials in order to deploy this API to your AWS account:
@@ -46,9 +62,13 @@ You will need to have the following credentials in order to deploy this API to y
 - `AWS_DEFAULT_REGION` (optional)
 
 ## What's Next?
-- CORS
 - Security
   - Certificate for the ALB, enable HTTPS
-- Metrics
-- Monitoring
+  - CORS
+- Observability
+  - Metrics
+  - Monitoring
+  - Logging
+- Repo
+  - Break main.tf up into separate files
 - CI/CD

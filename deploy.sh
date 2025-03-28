@@ -31,6 +31,41 @@ step() {
   echo -e "\n${BLUE}${BOLD}==>${NC}${BOLD} $1${NC}"
 }
 
+# Function to check if the endpoint is available
+check_endpoint() {
+  local url=$1
+  local max_attempts=$2
+  local wait_time=$3
+  local attempt=1
+
+  echo -e "${YELLOW}Waiting for endpoint to become available...${NC}"
+
+  while [ $attempt -le $max_attempts ]; do
+    echo -n "Attempt $attempt/$max_attempts: "
+    local status_code=$(curl -s -o /dev/null -w "%{http_code}" http://$url || echo "000")
+
+    if [ "$status_code" = "200" ]; then
+      echo -e "${GREEN}SUCCESS${NC}"
+      return 0
+    elif [ "$status_code" = "000" ]; then
+      echo -e "${YELLOW}Connection refused${NC}"
+    else
+      echo -e "${YELLOW}Received status code: $status_code${NC}"
+    fi
+
+    if [ $attempt -lt $max_attempts ]; then
+      echo -n "Waiting ${wait_time}s before next attempt... "
+      sleep $wait_time
+      echo "done."
+    fi
+
+    attempt=$((attempt+1))
+  done
+
+  echo -e "${YELLOW}Maximum attempts reached. The endpoint might not be fully ready yet.${NC}"
+  return 1
+}
+
 # Parse command line arguments
 AUTO_APPROVE=false
 REGION=""
@@ -66,7 +101,7 @@ if [ ! -z "$AWS_DEFAULT_REGION" ]; then
 fi
 
 # Check for required tools
-for cmd in terraform docker aws git; do
+for cmd in terraform docker aws git curl; do
   if ! command -v $cmd &> /dev/null; then
     echo -e "${RED}Error: $cmd is required but not installed.${NC}"
     exit 1
@@ -144,4 +179,27 @@ ALB_DNS=$(terraform output -raw alb_dns_name)
 echo -e "\n${GREEN}${BOLD}Deployment complete!${NC}"
 echo -e "${BLUE}API endpoint:${NC} http://$ALB_DNS"
 echo -e "${BLUE}Deployed image:${NC} $ECR_REPO:$IMAGE_TAG"
+
+# Check ECS task status
+step "Checking ECS task status"
+echo -e "Waiting for ECS task to start and register with the load balancer..."
+CLUSTER_NAME=$(terraform output -raw ecs_cluster_name 2>/dev/null || echo "time-api-cluster")
+SERVICE_NAME=$(terraform output -raw ecs_service_name 2>/dev/null || echo "time-api-service")
+REGION=$(terraform output -raw aws_region 2>/dev/null || echo ${TF_VAR_aws_region:-us-west-2})
+
+# Wait for the service to stabilize
+aws ecs wait services-stable --cluster $CLUSTER_NAME --services $SERVICE_NAME --region $REGION
+
+# Check if endpoint is responding
+step "Checking if API endpoint is responding"
+check_endpoint $ALB_DNS 10 15
+
+echo -e "\n${GREEN}${BOLD}Deployment verification complete!${NC}"
+echo -e "${BLUE}API endpoint:${NC} http://$ALB_DNS"
+
+# Test the endpoint
+step "Testing the endpoint"
+echo -e "Running a test curl command:"
+curl http://$ALB_DNS || echo -e "\n${YELLOW}Endpoint may not be fully ready. Try again in a few minutes.${NC}"
+
 echo -e "\n${YELLOW}To clean up all resources, run: ./destroy.sh${NC}"
