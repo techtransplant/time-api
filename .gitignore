@@ -2,3 +2,4 @@
 api/time-api
 
 infra/.terraform
+infra/.terraform.tfstate.backup
