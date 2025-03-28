@@ -62,6 +62,9 @@ You will need to have the following credentials in order to deploy this API to y
 - `AWS_DEFAULT_REGION` (optional)
 
 ## What's Next?
+- Testing
+  - Unit tests
+  - Integration tests
 - Security
   - Certificate for the ALB, enable HTTPS
   - CORS
@@ -71,4 +74,6 @@ You will need to have the following credentials in order to deploy this API to y
   - Logging
 - Repo
   - Break main.tf up into separate files
+  - Linting and formatting
+  - pre-commit hooks
 - CI/CD

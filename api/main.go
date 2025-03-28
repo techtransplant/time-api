@@ -1,10 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -28,7 +28,9 @@ func main() {
 		// Return a JSON response
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"The current epoch time":"` + strconv.FormatInt(time.Now().Unix(), 10) + `"}`))
+		 
+		// Return timestamp as an integer
+		json.NewEncoder(w).Encode(map[string]int64{"The current epoch time": time.Now().Unix()})
 	})
 
 	fmt.Printf("Server started on port %s\n", port)
