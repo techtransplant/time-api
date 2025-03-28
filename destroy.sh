@@ -35,7 +35,7 @@ if [ "$AUTO_APPROVE" = true ]; then
 else
   echo -e "${RED}${BOLD}WARNING:${NC} This will destroy all resources created by this project."
   echo -e "Type ${BOLD}yes${NC} to confirm:"
-  read confirmation
+  read -r confirmation
   if [ "$confirmation" != "yes" ]; then
     echo -e "${YELLOW}Destruction cancelled.${NC}"
     exit 0
