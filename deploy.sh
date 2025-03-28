@@ -111,7 +111,7 @@ cd ..
 
 # Build and push Docker image
 step "Building Docker image"
-docker build -t time-api -f api/Dockerfile api/ &
+docker build --platform=linux/amd64 -t time-api -f api/Dockerfile api/ &
 PID=$!
 spinner $PID
 wait $PID

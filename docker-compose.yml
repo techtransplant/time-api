@@ -3,7 +3,7 @@ services:
     container_name: time-api
     build:
       context: ./api
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "8000:8000"
     environment:

@@ -39,6 +39,15 @@ resource "aws_vpc_endpoint" "s3" {
   route_table_ids   = module.vpc.private_route_table_ids
 }
 
+resource "aws_vpc_endpoint" "logs" {
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.${var.aws_region}.logs"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = module.vpc.private_subnets
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
+  private_dns_enabled = true
+}
+
 # Security Groups
 resource "aws_security_group" "vpc_endpoints" {
   name        = "vpc-endponts-sg"
@@ -75,8 +84,8 @@ resource "aws_ecs_task_definition" "time_api" {
   family                   = "${var.api_name}-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "32"
-  memory                   = "64"
+  cpu                      = "256"
+  memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
   container_definitions = jsonencode([
@@ -91,7 +100,7 @@ resource "aws_ecs_task_definition" "time_api" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/ecs/${var.api_name}-task"
+          "awslogs-group"         = "/ecs/${var.api_name}"
           "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
         }
@@ -100,6 +109,7 @@ resource "aws_ecs_task_definition" "time_api" {
         { name = "AWS_REGION", value = var.aws_region },
         { name = "api_name", value = var.api_name }
       ]
+      depends_on = [aws_cloudwatch_log_group.time_api]
     }
   ])
 }
