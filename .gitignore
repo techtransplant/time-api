@@ -1,2 +1,4 @@
 # Ignore the build output
 api/time-api
+
+infra/.terraform

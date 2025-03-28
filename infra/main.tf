@@ -114,7 +114,7 @@ resource "aws_ecs_service" "time_api" {
 
   network_configuration {
     subnets          = module.vpc.private_subnets
-    security_groups  = [aws.security_group.ecs_tasks.id]
+    security_groups  = [aws_security_group.ecs_tasks.id]
     assign_public_ip = false
   }
 
@@ -130,7 +130,7 @@ resource "aws_lb" "time_api" {
   name               = "${var.api_name}-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws.security_group.lb.id]
+  security_groups    = [aws_security_group.lb.id]
   subnets            = module.vpc.public_subnets
 }
 
@@ -226,7 +226,7 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy" {
 # CloudWatch Logs
 resource "aws_cloudwatch_log_group" "time_api" {
   name              = "/ecs/${var.api_name}"
-  retention_in_days = 10
+  retention_in_days = 14
 }
 
 # Outputs

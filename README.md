@@ -7,7 +7,8 @@ This repo contains the code and infrastructure for a simple API that can be depl
 You will need to have the following tools installed in order to deploy this API to your AWS account:
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) v2.25.5 was used during development, but most recent versions should work.
 - [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) v1.11.3 was used during development, but most recent versions should work.
-- [Docker](https://docs.docker.com/get-docker/) (optional, for local development) v28.0.1 was used during development, but most recent versions should work.
+- [Docker](https://docs.docker.com/get-docker/) v28.0.1 was used during development, but most recent versions should work.
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) v2.39.5 was used during development, but most recent versions should work.
 
 ## Run Locally
 You can run the API locally using the following command:
