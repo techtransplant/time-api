@@ -46,7 +46,8 @@ You will need to have the following credentials in order to deploy this API to y
 
 ## What's Next?
 - CORS
-- Certificates
+- Security
+  - Certificate for the ALB, enable HTTPS
 - Metrics
 - Monitoring
 - CI/CD
